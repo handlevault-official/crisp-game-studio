@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GameStudio — Indie Game Dev Workshop &amp; GDD Planner</title>
+<meta name="description" content="Local-first indie game development toolkit and project manager. Part of the Crisp Suite.">
+<meta name="theme-color" content="#090d16" id="metaThemeColor">
+<script src="https://cdn.tailwindcss.com"></script> 
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+/* Gaming Dark Neon Theme (Default) */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #090d16;
+  --card: #101726;
+  --ink: #f8fafc;
+  --mute: #94a3b8;
+  --accent: #8b5cf6; /* Vibrant Gaming Violet/Purple */
+  --accent-ink: #ffffff;
+  --warn: #fbbf24;
+  --bad: #f87171;
+  --line: #23314d;
+  --field: #0b111e;
+  --btn-bg: #19243b;
+  --btn-hover: #22314f;
+  --btn-line: #3f5580;
+}
+
+/* Light Dev Theme */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --ink: #0f172a;
+  --mute: #475569;
+  --accent: #7c3aed;
+  --accent-ink: #ffffff;
+  --warn: #b45309;
+  --bad: #dc2626;
+  --line: #cbd5e1;
+  --field: #f1f5f9;
+  --btn-bg: #ffffff;
+  --btn-hover: #e2e8f0;
+  --btn-line: #94a3b8;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.6 'Plus Jakarta Sans', system-ui, sans-serif;
+  padding: 16px 12px 32px;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+button, input, select { font: inherit; color: inherit; }
+
+button {
+  cursor: pointer;
+  border: 2px solid var(--btn-line);
+  background: var(--btn-bg);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 10px 16px;
+  min-height: 46px;
+  font-weight: 700;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  transition: all 0.15s ease;
+}
+button:hover:not(:disabled) {
+  background: var(--btn-hover);
+  border-color: var(--accent);
+}
+button.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: transparent;
+  font-weight: 800;
+}
+button.primary:hover:not(:disabled) { filter: brightness(1.1); }
+button.danger {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--bad);
+  border-color: rgba(248, 113, 113, 0.6);
+}
+
+input, select {
+  width: 100%;
+  background: var(--field);
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: var(--ink);
+  font-size: 1rem;
+  outline: none;
+}
+input:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+label { display: block; font-size: 14px; color: var(--mute); margin-bottom: 4px; font-weight: 700; }
+
+header.top {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.brand { font-weight: 800; color: var(--accent); font-size: 1.3rem; letter-spacing: -0.02em; }
+.tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.tabs button { padding: 8px 14px; min-height: 40px; font-size: 14px; }
+.tabs button.on { background: var(--accent); color: var(--accent-ink); border-color: transparent; font-weight: 800; }
+
+main { max-width: 900px; margin: 0 auto; }
+.card { background: var(--card); border: 2px solid var(--line); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.hint { color: var(--mute); font-size: 14px; margin: 4px 0; }
+
+@media(max-width: 768px) {
+  .grid2 { grid-template-columns: 1fr; }
+  header.top { flex-direction: column; align-items: stretch; }
+  .tabs { justify-content: stretch; }
+  .tabs button { flex: 1; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div>
+    <span class="brand">🎮 GameStudio</span>
+    <p class="hint" style="margin:0;">Crisp Suite / HandleVault Dev Utility</p>
+  </div>
+  <nav class="tabs" aria-label="Sections">
+    <button data-tab="checklist" class="on">GDD Checklist</button>
+    <button data-tab="math">Game Math / FPS</button>
+    <button data-tab="assets">Asset Tracker</button>
+  </nav>
+  <div class="row">
+    <button id="btnThemeToggle" type="button" style="padding:6px 12px;min-height:36px;font-size:13px;">🌙 Night Shift</button>
+  </div>
+</header>
+
+<main>
+  <!-- TAB 1: GDD & MILESTONE CHECKLIST -->
+  <section id="tab-checklist">
+    <div class="card">
+      <h2 style="margin-top:0; font-size:1.2rem; color:var(--accent);">Game Design Document (GDD) &amp; Milestones</h2>
+      <div class="row" style="margin-bottom: 16px;">
+        <input id="taskInput" type="text" placeholder="Add task (e.g., Implement player double-jump physics)..." style="flex: 1;">
+        <button id="btnAddTask" class="primary">Add Task</button>
+      </div>
+      <div id="taskList" style="display: flex; flex-direction: column; gap: 8px;">
+        <!-- Dynamic Tasks -->
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 2: GAME MATH & FRAMERATE CONVERTER -->
+  <section id="tab-math" hidden>
+    <div class="card">
+      <h2 style="margin-top:0; font-size:1.2rem; color:var(--accent);">FPS to Milliseconds Converter</h2>
+      <p class="hint">Calculate frame budget for 60 FPS, 120 FPS, or custom frame rates.</p>
+      
+      <div class="row" style="margin: 16px 0;">
+        <div style="flex: 1;">
+          <label for="fpsInput">Target FPS</label>
+          <input id="fpsInput" type="number" value="60" min="1" max="1000">
+        </div>
+        <div style="flex: 1;">
+          <label>Frame Duration</label>
+          <div id="fpsResult" style="background: var(--field); border: 2px solid var(--line); border-radius: 12px; padding: 10px 14px; font-weight: 700; color: var(--accent);">16.67 ms per frame</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0; font-size:1.2rem; color:var(--accent);">Tilemap / Memory Estimator</h2>
+      <div class="grid2">
+        <div>
+          <label for="mapCols">Map Columns (Tiles)</label>
+          <input id="mapCols" type="number" value="100">
+        </div>
+        <div>
+          <label for="mapRows">Map Rows (Tiles)</label>
+          <input id="mapRows" type="number" value="100">
+        </div>
+      </div>
+      <div style="margin-top: 14px;" class="hint" id="tileResult">Total Tiles: 10,000 | Estimated Array Size: 40 KB</div>
+    </div>
+  </section>
+
+  <!-- TAB 3: ASSET & SPRITE TRACKER -->
+  <section id="tab-assets" hidden>
+    <div class="card">
+      <h2 style="margin-top:0; font-size:1.2rem; color:var(--accent);">Game Assets &amp; Sprite Tracker</h2>
+      <div class="grid2" style="margin-bottom: 12px;">
+        <div>
+          <label for="assetName">Asset Name</label>
+          <input id="assetName" type="text" placeholder="e.g., Player Run Sprite Sheet">
+        </div>
+        <div>
+          <label for="assetType">Category</label>
+          <select id="assetType">
+            <option value="Sprite">Sprite / Art</option>
+            <option value="Audio">Audio / SFX</option>
+            <option value="Code">Script / Code</option>
+            <option value="UI">UI Element</option>
+          </select>
+        </div>
+      </div>
+      <button id="btnAddAsset" class="primary" style="width: 100%;">Register Asset</button>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top:0; font-size:1.2rem; color:var(--accent);">Registered Project Assets</h2>
+      <div id="assetList" style="display: flex; flex-direction: column; gap: 8px;">
+        <!-- Dynamic Assets -->
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const THEME_KEY = 'gamestudio_theme';
+  const btnTheme = document.getElementById('btnThemeToggle');
+  const metaTheme = document.getElementById('metaThemeColor');
+
+  function applyTheme(theme) {
+    const isLight = theme === 'light';
+    document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+    if (btnTheme) btnTheme.textContent = isLight ? '☀️ Day Shift' : '🌙 Night Shift';
+    if (metaTheme) metaTheme.setAttribute('content', isLight ? '#f8fafc' : '#090d16');
+    localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+  }
+
+  applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+  btnTheme.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    applyTheme(current === 'light' ? 'dark' : 'light');
+  });
+
+  const tabs = document.querySelectorAll('.tabs button');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('on'));
+      tab.classList.add('on');
+      const target = tab.dataset.tab;
+      document.querySelectorAll('main > section').forEach(sec => {
+        sec.hidden = sec.id !== `tab-${target}`;
+      });
+    });
+  });
+
+  // Checklist Logic
+  const taskInput = document.getElementById('taskInput');
+  const btnAddTask = document.getElementById('btnAddTask');
+  const taskList = document.getElementById('taskList');
+  let tasks = JSON.parse(localStorage.getItem('game_tasks') || '[{"text": "Setup Tilemap collision layer", "done": true}, {"text": "Implement main menu UI & audio triggers", "done": false}]');
+
+  function renderTasks() {
+    taskList.innerHTML = '';
+    tasks.forEach((t, idx) => {
+      const div = document.createElement('div');
+      div.className = 'row';
+      div.style.justify = 'space-between';
+      div.style.background = 'var(--field)';
+      div.style.padding = '10px 14px';
+      div.style.borderRadius = '10px';
+      div.style.border = '2px solid var(--line)';
+      
+      div.innerHTML = `
+        <span style="font-weight: 600; ${t.done ? 'text-decoration: line-through; opacity: 0.6;' : ''}">${t.text}</span>
+        <div class="row">
+          <button class="${t.done ? '' : 'primary'}" style="padding: 6px 12px; min-height: 36px; font-size:13px;" onclick="window.toggleTask(${idx})">${t.done ? 'Done ✓' : 'Complete'}</button>
+          <button class="danger" style="padding: 6px 10px; min-height: 36px; font-size:13px;" onclick="window.deleteTask(${idx})">✕</button>
+        </div>
+      `;
+      taskList.appendChild(div);
+    });
+  }
+
+  window.toggleTask = (idx) => {
+    tasks[idx].done = !tasks[idx].done;
+    localStorage.setItem('game_tasks', JSON.stringify(tasks));
+    renderTasks();
+  };
+
+  window.deleteTask = (idx) => {
+    tasks.splice(idx, 1);
+    localStorage.setItem('game_tasks', JSON.stringify(tasks));
+    renderTasks();
+  };
+
+  btnAddTask.addEventListener('click', () => {
+    const text = taskInput.value.trim();
+    if (text) {
+      tasks.push({ text, done: false });
+      localStorage.setItem('game_tasks', JSON.stringify(tasks));
+      taskInput.value = '';
+      renderTasks();
+    }
+  });
+
+  renderTasks();
+
+  // Math & FPS Converter
+  const fpsInput = document.getElementById('fpsInput');
+  const fpsResult = document.getElementById('fpsResult');
+  function calcFPS() {
+    const fps = parseFloat(fpsInput.value) || 60;
+    const ms = (1000 / fps).toFixed(2);
+    fpsResult.textContent = `${ms} ms per frame`;
+  }
+  fpsInput.addEventListener('input', calcFPS);
+  calcFPS();
+
+  const mapCols = document.getElementById('mapCols');
+  const mapRows = document.getElementById('mapRows');
+  const tileResult = document.getElementById('tileResult');
+  function calcTiles() {
+    const c = parseInt(mapCols.value) || 0;
+    const r = parseInt(mapRows.value) || 0;
+    const total = c * r;
+    const kb = (total * 4) / 1024;
+    tileResult.textContent = `Total Tiles: ${total.toLocaleString()} | Estimated Array Size: ${kb.toFixed(2)} KB`;
+  }
+  mapCols.addEventListener('input', calcTiles);
+  mapRows.addEventListener('input', calcTiles);
+  calcTiles();
+
+  // Asset Tracker
+  const assetName = document.getElementById('assetName');
+  const assetType = document.getElementById('assetType');
+  const btnAddAsset = document.getElementById('btnAddAsset');
+  const assetList = document.getElementById('assetList');
+  let assets = JSON.parse(localStorage.getItem('game_assets') || '[{"name": "Player Run Sprite Sheet", "type": "Sprite"}, {"name": "Jump Sound FX", "type": "Audio"}]');
+
+  function renderAssets() {
+    assetList.innerHTML = '';
+    assets.forEach((a, idx) => {
+      const div = document.createElement('div');
+      div.className = 'row';
+      div.style.justify = 'space-between';
+      div.style.background = 'var(--field)';
+      div.style.padding = '10px 14px';
+      div.style.borderRadius = '10px';
+      div.style.border = '2px solid var(--line)';
+      
+      div.innerHTML = `
+        <div>
+          <strong>${a.name}</strong>
+          <span class="hint" style="margin-left: 8px; color:var(--accent);">[${a.type}]</span>
+        </div>
+        <button class="danger" style="padding: 6px 10px; min-height: 36px; font-size:13px;" onclick="window.deleteAsset(${idx})">Delete</button>
+      `;
+      assetList.appendChild(div);
+    });
+  }
+
+  window.deleteAsset = (idx) => {
+    assets.splice(idx, 1);
+    localStorage.setItem('game_assets', JSON.stringify(assets));
+    renderAssets();
+  };
+
+  btnAddAsset.addEventListener('click', () => {
+    const name = assetName.value.trim();
+    const type = assetType.value;
+    if (name) {
+      assets.push({ name, type });
+      localStorage.setItem('game_assets', JSON.stringify(assets));
+      assetName.value = '';
+      renderAssets();
+    }
+  });
+
+  renderAssets();
+})();
+</script>
+<script src="repo.js"></script>
+</body>
+</html>
